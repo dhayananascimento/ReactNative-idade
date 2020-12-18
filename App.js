@@ -1,22 +1,55 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import "dayjs/locale/pt-br";
+import dayjs from "dayjs";
+
+dayjs.locale("pt-br");
 
 export default function App() {
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [data, setData] = useState(dayjs().format("DD/MM/YYYY"));
+  console.log("rodou. data: ", data, "mostrar calendario: ", mostrarCalendario)
+
+  function mudaData(event, date) {
+    setMostrarCalendario(false);
+    if (event.type == "set") {
+        const valor = dayjs(date).format("DD/MM/YYYY");
+        setData(valor)
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Selecione a data do seu nascimento:</Text>
-      <DateTimePicker
-        mode="date"
-        display="default"
-        value={new Date()}
-        maximumDate={new Date()}
-        minimumDate={new Date(1900, 1, 1)}
-        onChange={() => {}}
-      />
+      <Text style={styles.textoPadrao}>
+        Selecione a data do seu nascimento:
+      </Text>
+
+      <Text style={styles.textoPadrao}>Data: {data}</Text>
+
+      <TouchableOpacity
+        style={styles.botaoClique}
+        onPress={() => {
+          setMostrarCalendario(true);
+        }}
+      >
+        <Text style={[styles.textoPadrao, { marginRight: 5}]}>Clique aqui</Text>
+        <FontAwesome name="hand-pointer-o" size={22} color="orange" />
+      </TouchableOpacity>
+
+      {mostrarCalendario && (
+        <DateTimePicker
+          mode="countdown"
+          display="default"
+          onChange={mudaData}
+          value={new Date()}
+          maximumDate={new Date()}
+          minimumDate={new Date(1900, 1, 1)}
+        />
+      )}
 
       <View style={styles.containerIdade}>
         <View style={styles.containerIdadeAniversario}>
@@ -85,10 +118,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 
-  containerIdadeAniversario: {
-    margin: 10,
+  botaoClique: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
+    justifyContent: "center",
+
+    borderColor: "orange",
+    borderRadius: 10,
+    borderWidth: 2,
+
+    padding: 10,
+    margin: 10,
   },
 
   containerIdade: {
@@ -96,9 +136,16 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderColor: "#ccc",
 
+    marginTop: 20,
     width: "100%",
     maxWidth: 400,
     height: "auto",
+  },
+
+  containerIdadeAniversario: {
+    margin: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
   idade: {
