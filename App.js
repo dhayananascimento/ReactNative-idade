@@ -34,13 +34,14 @@ export default function App() {
   const [totalMinutos, setTotalMinutos] = useState(0);
 
   function mudaData(event, date) {
-    setMostrarCalendario(false);
-
     if (event.type == "set") {
       const valor = dayjs(date);
+      setMostrarCalendario(false);
       setDataNascimento(valor);
-      calculaResumo();
+      calculaResumo(valor);
+      return;
     }
+    setMostrarCalendario(false);
   }
 
   function calculaIdade() {
@@ -55,15 +56,14 @@ export default function App() {
 
   function calculaProxAniversario() {}
 
-  function calculaResumo() {
-    // setAnos(dayjs().diff(dataNascimento, "year"));
-    // setTotalMeses(dayjs().diff(dataNascimento, "month"));
-    // setTotalSemanas(dayjs().diff(dataNascimento, "week"));
-    // setTotalDias(dayjs().diff(dataNascimento, "day"));
-    // setTotalHoras(dayjs().diff(dataNascimento, "hour"));
-    // setTotalMinutos(dayjs().diff(dataNascimento, "minute"));
+  function calculaResumo(valor = dataNascimento) {
+    setAnos(dayjs().diff(valor, "year"));
+    setTotalMeses(dayjs().diff(valor, "month"));
+    setTotalSemanas(dayjs().diff(valor, "week"));
 
-    console.log("chamou resumo", dataNascimento.format("DD/MM/YYYY"));
+    setTotalDias(dayjs().diff(valor, "day"));
+    setTotalHoras(dayjs().diff(valor, "hour"));
+    setTotalMinutos(dayjs().diff(valor, "minute"));
   }
 
   useEffect(() => {
