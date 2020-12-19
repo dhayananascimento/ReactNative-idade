@@ -1,6 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -11,108 +17,161 @@ dayjs.locale("pt-br");
 
 export default function App() {
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
-  const [data, setData] = useState(dayjs().format("DD/MM/YYYY"));
-  console.log("rodou. data: ", data, "mostrar calendario: ", mostrarCalendario)
+  const [dataNascimento, setDataNascimento] = useState(dayjs());
+
+  const [anos, setAnos] = useState(0);
+  const [meses, setMeses] = useState(0);
+  const [dias, setDias] = useState(0);
+
+  const [proxMeses, setProxMeses] = useState(0);
+  const [proxDias, setProxDias] = useState(0);
+  const [proxDiaSemana, setProxDiaSemana] = useState("x-feira");
+
+  const [totalMeses, setTotalMeses] = useState(0);
+  const [totalSemanas, setTotalSemanas] = useState(0);
+  const [totalDias, setTotalDias] = useState(0);
+  const [totalHoras, setTotalHoras] = useState(0);
+  const [totalMinutos, setTotalMinutos] = useState(0);
 
   function mudaData(event, date) {
     setMostrarCalendario(false);
+
     if (event.type == "set") {
-        const valor = dayjs(date).format("DD/MM/YYYY");
-        setData(valor)
+      const valor = dayjs(date);
+      setDataNascimento(valor);
+      calculaResumo();
     }
   }
 
+  function calculaIdade() {
+    const ano = dayjs(dataNascimento).year();
+    const mes = dayjs(dataNascimento).month() + 1;
+    const dia = dayjs(dataNascimento).date();
+
+    const anoAtual = dayjs().year();
+    const mesAtual = dayjs().month() + 1;
+    const diaAtual = dayjs().date();
+  }
+
+  function calculaProxAniversario() {}
+
+  function calculaResumo() {
+    // setAnos(dayjs().diff(dataNascimento, "year"));
+    // setTotalMeses(dayjs().diff(dataNascimento, "month"));
+    // setTotalSemanas(dayjs().diff(dataNascimento, "week"));
+    // setTotalDias(dayjs().diff(dataNascimento, "day"));
+    // setTotalHoras(dayjs().diff(dataNascimento, "hour"));
+    // setTotalMinutos(dayjs().diff(dataNascimento, "minute"));
+
+    console.log("chamou resumo", dataNascimento.format("DD/MM/YYYY"));
+  }
+
+  useEffect(() => {
+    calculaResumo();
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.textoPadrao}>
-        Selecione a data do seu nascimento:
-      </Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.textoPadrao}>
+          Selecione a data do seu nascimento:
+        </Text>
 
-      <Text style={styles.textoPadrao}>Data: {data}</Text>
+        <Text style={styles.textoPadrao}>
+          Data: {dayjs(dataNascimento).format("DD/MM/YYYY")}
+        </Text>
 
-      <TouchableOpacity
-        style={styles.botaoClique}
-        onPress={() => {
-          setMostrarCalendario(true);
-        }}
-      >
-        <Text style={[styles.textoPadrao, { marginRight: 5}]}>Clique aqui</Text>
-        <FontAwesome name="hand-pointer-o" size={22} color="orange" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoClique}
+          onPress={() => {
+            setMostrarCalendario(true);
+          }}
+        >
+          <Text style={[styles.textoPadrao, { marginRight: 5 }]}>
+            Clique aqui
+          </Text>
+          <FontAwesome name="hand-pointer-o" size={22} color="orange" />
+        </TouchableOpacity>
 
-      {mostrarCalendario && (
-        <DateTimePicker
-          mode="countdown"
-          display="default"
-          onChange={mudaData}
-          value={new Date()}
-          maximumDate={new Date()}
-          minimumDate={new Date(1900, 1, 1)}
-        />
-      )}
+        {mostrarCalendario && (
+          <DateTimePicker
+            mode="countdown"
+            display="default"
+            onChange={mudaData}
+            value={new Date()}
+            maximumDate={new Date()}
+            minimumDate={new Date(1900, 1, 1)}
+          />
+        )}
 
-      <View style={styles.containerIdade}>
-        <View style={styles.containerIdadeAniversario}>
-          <View style={styles.idade}>
-            <Text style={[styles.textoPadrao, { fontSize: 30 }]}>Idade</Text>
-            <Text style={styles.textoPadrao}>
-              <Text style={[styles.textoLaranja, { fontSize: 40 }]}>20</Text>
-              anos
-            </Text>
-            <Text style={styles.tituloPadrao}>4 meses | 0 dias</Text>
+        <View style={styles.containerIdade}>
+          <View style={styles.containerIdadeAniversario}>
+            <View style={styles.idade}>
+              <Text style={[styles.textoPadrao, { fontSize: 30 }]}>Idade</Text>
+              <Text style={styles.textoPadrao}>
+                <Text style={[styles.textoLaranja, { fontSize: 40 }]}>
+                  {anos}
+                </Text>
+                anos
+              </Text>
+              <Text style={styles.tituloPadrao}>
+                {meses} meses | {dias} dias
+              </Text>
+            </View>
+            <View style={styles.aniversario}>
+              <Text style={styles.textoLaranja}>Próximo aniversário</Text>
+              <FontAwesome name="birthday-cake" size={32} color="orange" />
+              <Text style={styles.textoPadrao}>{proxDiaSemana}</Text>
+              <Text style={styles.tituloPadrao}>
+                {proxMeses} meses | {proxDias} dias
+              </Text>
+            </View>
           </View>
-          <View style={styles.aniversario}>
-            <Text style={styles.textoLaranja}>Próximo aniversário</Text>
-            <FontAwesome name="birthday-cake" size={32} color="orange" />
-            <Text style={styles.textoPadrao}>segunda-feira</Text>
-            <Text style={styles.tituloPadrao}>8 meses | 0 dias</Text>
+          <View style={styles.containerResumo}>
+            <Text style={styles.textoLaranja}>Resumo</Text>
+
+            <View style={styles.resumo}>
+              <View style={styles.itensResumo}>
+                <Text style={styles.tituloPadrao}>Anos</Text>
+                <Text style={styles.textoPadrao}>{anos}</Text>
+              </View>
+
+              <View style={styles.itensResumo}>
+                <Text style={styles.tituloPadrao}>Meses</Text>
+                <Text style={styles.textoPadrao}>{totalMeses}</Text>
+              </View>
+
+              <View style={styles.itensResumo}>
+                <Text style={styles.tituloPadrao}>Semanas</Text>
+                <Text style={styles.textoPadrao}>{totalSemanas}</Text>
+              </View>
+
+              <View style={styles.itensResumo}>
+                <Text style={styles.tituloPadrao}>Dias</Text>
+                <Text style={styles.textoPadrao}>{totalDias}</Text>
+              </View>
+
+              <View style={styles.itensResumo}>
+                <Text style={styles.tituloPadrao}>Horas</Text>
+                <Text style={styles.textoPadrao}>{totalHoras}</Text>
+              </View>
+
+              <View style={styles.itensResumo}>
+                <Text style={styles.tituloPadrao}>Minutos</Text>
+                <Text style={styles.textoPadrao}>{totalMinutos} </Text>
+              </View>
+            </View>
           </View>
         </View>
-        <View style={styles.containerResumo}>
-          <Text style={styles.textoLaranja}>Resumo</Text>
 
-          <View style={styles.resumo}>
-            <View style={styles.itensResumo}>
-              <Text style={styles.tituloPadrao}>Anos</Text>
-              <Text style={styles.textoPadrao}>000</Text>
-            </View>
-
-            <View style={styles.itensResumo}>
-              <Text style={styles.tituloPadrao}>Meses</Text>
-              <Text style={styles.textoPadrao}>000</Text>
-            </View>
-
-            <View style={styles.itensResumo}>
-              <Text style={styles.tituloPadrao}>Semanas</Text>
-              <Text style={styles.textoPadrao}>000</Text>
-            </View>
-
-            <View style={styles.itensResumo}>
-              <Text style={styles.tituloPadrao}>Dias</Text>
-              <Text style={styles.textoPadrao}>000</Text>
-            </View>
-
-            <View style={styles.itensResumo}>
-              <Text style={styles.tituloPadrao}>Horas</Text>
-              <Text style={styles.textoPadrao}>000</Text>
-            </View>
-
-            <View style={styles.itensResumo}>
-              <Text style={styles.tituloPadrao}>Minutos</Text>
-              <Text style={styles.textoPadrao}>000</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-
-      <StatusBar style="light" backgroundColor="orange" />
+        <StatusBar style="light" backgroundColor="orange" />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 10,
     alignItems: "center",
     backgroundColor: "#fff",
