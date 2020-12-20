@@ -2,7 +2,7 @@
 App de cálculo de idade utilizando React Native. Projeto com a finalidade de treinar habilidades relativa ao framework React Native.
 
 ## Demo
-<img src="./idade.jpg" alt= "imagem do cálculo da idade">     
+<img src="./idade.jpeg" alt= "imagem do cálculo da idade">     
         
 ## Linguagens
 * Javascript
