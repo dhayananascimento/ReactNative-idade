@@ -67,8 +67,12 @@ export default function App() {
         proximo = dayjs(`${anoAtual}/${mesAniversario}/${diaAniversario}`).diff(dayjs(), "days"
         );
     }
+
+    setProxAniversarioDias(proximo);
     
-    let dataProxAniversario = dayjs().add((proximo +1), 'day').day();
+    if(proximo > 0 ) proximo += 1;
+    
+    let dataProxAniversario = dayjs().add((proximo), 'day').day();
     let proximoDiaSemana = "";
 
     switch(dataProxAniversario){
@@ -96,8 +100,7 @@ export default function App() {
       default:
         proximoDiaSemana 
     }
-
-    setProxAniversarioDias(proximo);
+    
     setProxAniversarioDiaSemana(proximoDiaSemana);
   }
 
