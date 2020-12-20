@@ -20,12 +20,11 @@ export default function App() {
   const [dataNascimento, setDataNascimento] = useState(dayjs());
 
   const [anos, setAnos] = useState(0);
-  const [meses, setMeses] = useState(0);
-  const [dias, setDias] = useState(0);
 
-  const [proxMeses, setProxMeses] = useState(0);
-  const [proxDias, setProxDias] = useState(0);
-  const [proxDiaSemana, setProxDiaSemana] = useState("x-feira");
+  const [proxAniversarioDias, setProxAniversarioDias] = useState(0);
+  const [proxAniversarioDiaSemana, setProxAniversarioDiaSemana] = useState(
+    "x-feira"
+  );
 
   const [totalMeses, setTotalMeses] = useState(0);
   const [totalSemanas, setTotalSemanas] = useState(0);
@@ -38,23 +37,69 @@ export default function App() {
       const valor = dayjs(date);
       setMostrarCalendario(false);
       setDataNascimento(valor);
+      calculaProxAniversario(valor);
       calculaResumo(valor);
       return;
     }
     setMostrarCalendario(false);
   }
 
-  function calculaIdade() {
-    const ano = dayjs(dataNascimento).year();
-    const mes = dayjs(dataNascimento).month() + 1;
-    const dia = dayjs(dataNascimento).date();
-
+  function calculaProxAniversario(valor = dataNascimento) {
+    const mesAniversario = dayjs(valor).month() + 1;
+    const diaAniversario = dayjs(valor).date();
     const anoAtual = dayjs().year();
     const mesAtual = dayjs().month() + 1;
     const diaAtual = dayjs().date();
-  }
 
-  function calculaProxAniversario() {}
+    let proximo = 0;
+
+    if (mesAniversario > mesAtual) 
+      proximo = dayjs().diff(`${anoAtual}/${mesAniversario}/${diaAniversario}`, "days");
+    
+      else if (mesAniversario < mesAtual) 
+      proximo = dayjs(`${anoAtual + 1}/${mesAniversario}/${diaAniversario}`).diff(dayjs(), "days");
+    
+      else {
+        if (diaAniversario < diaAtual) 
+        proximo = dayjs(`${anoAtual + 1}/${mesAniversario}/${diaAniversario}`).diff(dayjs(), "days");
+        
+        else 
+        proximo = dayjs(`${anoAtual}/${mesAniversario}/${diaAniversario}`).diff(dayjs(), "days"
+        );
+    }
+    
+    let dataProxAniversario = dayjs().add((proximo +1), 'day').day();
+    let proximoDiaSemana = "";
+
+    switch(dataProxAniversario){
+      case 0:
+        proximoDiaSemana = "Domingo"
+        break;
+      case 1:
+        proximoDiaSemana = "segunda-feira"
+        break;
+      case 2:
+        proximoDiaSemana = "terça-feira"
+        break;
+      case 3:
+        proximoDiaSemana = "quarta-feira"
+        break;
+      case 4:
+        proximoDiaSemana = "quinta-feira"
+        break;
+      case 5:
+        proximoDiaSemana = "sexta-feira"
+        break;
+      case 6:
+        proximoDiaSemana = "sábado"
+        break;
+      default:
+        proximoDiaSemana 
+    }
+
+    setProxAniversarioDias(proximo);
+    setProxAniversarioDiaSemana(proximoDiaSemana);
+  }
 
   function calculaResumo(valor = dataNascimento) {
     setAnos(dayjs().diff(valor, "year"));
@@ -67,6 +112,7 @@ export default function App() {
   }
 
   useEffect(() => {
+    calculaProxAniversario();
     calculaResumo();
   }, []);
 
@@ -99,6 +145,7 @@ export default function App() {
             display="default"
             onChange={mudaData}
             value={new Date()}
+            textColor="orange"
             maximumDate={new Date()}
             minimumDate={new Date(1900, 1, 1)}
           />
@@ -114,16 +161,13 @@ export default function App() {
                 </Text>
                 anos
               </Text>
-              <Text style={styles.tituloPadrao}>
-                {meses} meses | {dias} dias
-              </Text>
             </View>
             <View style={styles.aniversario}>
               <Text style={styles.textoLaranja}>Próximo aniversário</Text>
               <FontAwesome name="birthday-cake" size={32} color="orange" />
-              <Text style={styles.textoPadrao}>{proxDiaSemana}</Text>
+              <Text style={styles.textoPadrao}>{proxAniversarioDiaSemana}</Text>
               <Text style={styles.tituloPadrao}>
-                {proxMeses} meses | {proxDias} dias
+                {proxAniversarioDias} dias
               </Text>
             </View>
           </View>
@@ -213,7 +257,7 @@ const styles = StyleSheet.create({
     padding: 10,
 
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "center",
 
     borderRightWidth: 1,
     borderRightColor: "#ccc",
